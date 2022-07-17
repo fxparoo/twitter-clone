@@ -18,7 +18,6 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('name', 'admin')
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('superuser must have is_staff=True')
@@ -33,7 +32,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=100, blank=False, null=False)
     last_name = models.CharField(max_length=100, blank=False, null=False)
     email = models.EmailField(max_length=150, unique=True)
-    username = models.CharField(max_length=100, default='', null=True, blank=True)
+    username = models.CharField(max_length=100, default='', null=True, blank=True, unique=True)
     password = models.CharField(max_length=150, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
