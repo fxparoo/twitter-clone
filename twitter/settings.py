@@ -13,10 +13,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 from decouple import config
 import dj_database_url
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -29,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,8 +39,58 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'authentication'
+    'authentication',
+    'rest_registration',
+    'rest_framework_simplejwt',
 ]
+
+AUTH_USER_MODEL = "authentication.CustomUser"
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 3,
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+    'USER_ID_FIELD': 'id',
+
+}
+
+REST_REGISTRATION = {
+    'REGISTER_SERIALIZER_CLASS': 'api.serializers.RegisterUserSerializer',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': SECRET_KEY,
+    'CHANGE_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True,
+    'REGISTER_VERIFICATION_ENABLED': False,
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+    'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+    'REGISTER_SERIALIZER_PASSWORD_CONFIRM': False,
+    'REGISTER_VERIFICATION_PERIOD': datetime.timedelta(days=5),
+    'REGISTER_EMAIL_VERIFICATION_URL': config('VERIFICATION_URL'),
+    'REGISTER_VERIFICATION_ONE_TIME_USE': False,
+    'VERIFICATION_FROM_EMAIL': 'akwuziefunds@gmail.com',
+    'REGISTER_VERIFICATION_AUTO_LOGIN': False,
+    'RESET_PASSWORD_VERIFICATION_URL': ' ',
+    'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
+        'subject': 'verification.txt',
+        'html_body': 'register_verification.html',
+        'RESET_PASSWORD_VERIFICATION_ENABLED': True,
+        'RESET_PASSWORD_VERIFICATION_PERIOD': datetime.timedelta(days=1)
+
+    },
+
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -73,14 +122,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'twitter.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-  'default': dj_database_url.parse(config('DATABASE_URL'))
+    'default': dj_database_url.parse(config('DATABASE_URL'))
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -100,7 +147,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -111,7 +157,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
